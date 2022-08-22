@@ -45,7 +45,7 @@ app.get('/seeGroups', authUser, allGroupsCotroller); //devuelve todos los grupos
 app.post('/newGroup', authUser, createGroupController); //crea un nuevo grupo para los servicios
 app.delete('/delIdGroup', authUser, delIdGroupController); //borrar un grupo por id
 app.delete('/delAllGroups', authUser, delAllGroupsController); //borra todos los grupos
-app.post('/uploadFile', authUser, authUser, upload, uploadController); //sube un archivo al servidor
+app.post('/uploadFile', authUser, upload, uploadController); //sube un archivo al servidor
 app.get('/getAllVals/:id', authUser, getAllVallsController); //devuelve las valoraciones de un usuario
 app.post('/newJob', authUser, createJobController); //crea un trabajo nuevo
 app.post('/newVal', authUser, createValController); //crea una valoracion de un trabajo
