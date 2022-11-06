@@ -2,6 +2,8 @@ require('dotenv').config();
 
 const express = require('express');
 const morgan = require('morgan');
+const cors = require('cors');
+const fileUpload = require('express-fileupload');
 
 
 const {
@@ -18,6 +20,8 @@ const {
     delIdGroupController, delAllGroupsController,
     getAllVallsController, createJobController,
     createValController, solvJobController,
+    delIdServiceController, getAllCommentsController,
+    checkStayJobCotroller,
 } = require('./controllers/services');
 
 const { authUser } = require('./middleware/midUser');
@@ -27,6 +31,9 @@ const app = express();
 
 app.use(express.json());
 app.use(morgan('dev'));
+app.use('/uploads', express.static('./uploads'));
+app.use(cors({origin: '*',}));
+app.use(fileUpload());
 
 //Rutas users
 app.post('/user', newUserController); //crea usuario
@@ -39,19 +46,33 @@ app.post('/chanPass', authUser, changePassController); //Cambia la contraseña d
 app.get('/', getServicesController); //devolver lista de servicios
 app.post('/createService', authUser, newServiceController); //crear nuevo servicio
 app.get('/myServs/:id', authUser, getAllServsController); //devuelve todos los servicios de un usuario
+app.get('/allComOneServ/:id', authUser, getAllCommentsController); //devuelve todos los comentarios de un servicio
 app.post('/addCom', authUser, commentServiceController); //hacer comentarios a un servicio
 app.get('/myComs/:id', authUser, myComsController); //devuelve lista de comentarios de un servicio
 app.get('/seeGroups', authUser, allGroupsCotroller); //devuelve todos los grupos
 app.post('/newGroup', authUser, createGroupController); //crea un nuevo grupo para los servicios
+app.delete('/delIdServ/:id', authUser, delIdServiceController); //borra un servicio propio por id
 app.delete('/delIdGroup', authUser, delIdGroupController); //borrar un grupo por id
 app.delete('/delAllGroups', authUser, delAllGroupsController); //borra todos los grupos
-app.post('/uploadFile', authUser, upload, uploadController); //sube un archivo al servidor
+app.post('/uploadFile', authUser, uploadController); //sube un archivo al servidor
 app.get('/getAllVals/:id', authUser, getAllVallsController); //devuelve las valoraciones de un usuario
 app.post('/newJob', authUser, createJobController); //crea un trabajo nuevo
+app.get('/imInThatJob', authUser, checkStayJobCotroller); //comprueba si el usuario loggeado tiene un trabajo concreto
 app.post('/newVal', authUser, createValController); //crea una valoracion de un trabajo
 app.put('/solved/:id', authUser, solvJobController); //Marca trabajo como resuelto
 
 
+//Cors
+/*
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header(
+      "Access-Control-Allow-Headers",
+      "Origin, X-Requested-With, Content-Type, Accept"
+    );
+    next();
+  });
+*/
 //404
 app.use((req, res) => {
     res.status(404).send({
@@ -71,6 +92,6 @@ app.use((error, req, res, next) => {
 });
 
 //lanzar server
-app.listen(3000, () => {
+app.listen(process.env.BACK_PORT, () => {
     console.log('Servidor en marcha!');
 })

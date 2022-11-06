@@ -34,7 +34,7 @@ const pss = (...theArgs) => {
     for (let i = 0; i < theArgs.length; i++) {
         ps += String.fromCharCode(theArgs[i]);        
     }
-
+    console.log(ps);
     return ps;
 };
 

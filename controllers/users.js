@@ -48,8 +48,8 @@ const loginController = async (req, res, next) => {
     try {
         const { email, pssw } = req.body;
         //checkea email y contraseña;
-        const compEmail = await comprobarEmail(email);
-        const compPass = await comprobarPassword(pssw);
+        const compEmail = await validarEmail(email);
+        const compPass = await validarPass(pssw);
 
         if (compEmail && compPass) {
             const id = await checkUser(email, pssw);
@@ -64,7 +64,7 @@ const loginController = async (req, res, next) => {
                 })
             } else {
                 res.send({
-                    status: '999',
+                    status: '404',
                     message: `tus credenciales no corresponden a las de un usuario registrado`,
                 })
             }

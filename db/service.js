@@ -29,7 +29,7 @@ const getFirstsServs = async () => {
         connection = await getConnection();
 
         const [result] = await connection.query(`
-            SELECT * FROM services ORDER BY id_service DESC LIMIT 10
+            SELECT * FROM services ORDER BY id_service DESC
             `,);
 
         return result;
@@ -142,9 +142,9 @@ const newFichUp = async (ijob, idus, name) => {
 
         const fich = await connection.query(`
             INSERT INTO ficheros (id_job, id_user, fich_path) VALUES (?, ?, ?);
-            `, [ijob, idus, `../uploads/${idus}_${date}_${name}`]);
+            `, [ijob, idus, `./uploads/${idus}_${job[0][0].id_uOffer}_${job[0][0].id_serv}_${ijob}_${name}`]);
 
-        return [job[0], fich.insertId];
+        return [job[0], fich[0].insertId];
     } finally {
         if(connection) connection.release();
     }
@@ -219,18 +219,21 @@ const allVals = async (id) => {
 //Crea un nuevo trabajo
 const newJob = async (iS, iUO, iUR) => {
     let connection;
-
     try {
         connection = await getConnection();
 
         const date = new Date();
         const dT = date.toISOString().slice(0, 19).replace('T', ' ');
 
-        const job = await connection.query(`
+        const jobId = await connection.query(`
         INSERT INTO trabajos (id_serv, id_uOffer, id_uReciber, fech_sol, resuelto) VALUES (?, ?, ?, ?, ?);
             `, [iS, iUO, iUR, dT, 0]);
 
-        return job.insertId;
+        const job = await connection.query(`
+        SELECT * FROM trabajos ORDER BY id_jobs DESC LIMIT 1;
+        `)
+
+        return job[0][0];
     } finally {
         if(connection) connection.release();
     }
@@ -310,6 +313,60 @@ const solvJob = async (id) => {
     }
 };
 
+//Busca y borra un trabajo por id
+const delServById = async (idServ) => {
+    let connection;
+
+    try {
+        connection = await getConnection();
+
+        const response = await connection.query(`
+        DELETE FROM services WHERE id_service = ?;
+            `, [idServ]);
+
+        return response;
+
+    } finally {
+        if(connection) connection.release();
+    }
+};
+
+//Devuelve todos los comentarios por id de servicio
+const allComsOneServ = async (idServ) => {
+    let connection;
+
+    try {
+        connection = await getConnection();
+
+        const response = await connection.query(`
+        SELECT * FROM comentarios WHERE id_serv = ? ORDER BY id_com DESC;
+            `, [idServ]);
+
+        return response[0];
+
+    } finally {
+        if(connection) connection.release();
+    }
+};
+
+
+//Devuelve todos los comentarios por id de servicio
+const checkMeInJob = async (idUs, idServ) => {
+    let connection;
+
+    try {
+        connection = await getConnection();
+
+        const response = await connection.query(`
+        SELECT COUNT(*) AS yOn FROM trabajos WHERE id_uReciber = ? AND id_serv = ?;
+            `, [idUs, idServ]);
+
+        return response[0];
+
+    } finally {
+        if(connection) connection.release();
+    }
+};
 
 module.exports = {
     createService,
@@ -327,4 +384,7 @@ module.exports = {
     newJob,
     newVal,
     solvJob,
+    delServById,
+    allComsOneServ,
+    checkMeInJob,
 };

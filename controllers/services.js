@@ -13,6 +13,9 @@ const {
     newJob,
     newVal,
     solvJob,
+    delServById,
+    allComsOneServ,
+    checkMeInJob,
 } = require('../db/service');
 
 //devuelve los ultimos 10 servicios creados
@@ -184,11 +187,14 @@ const getAllVallsController = async (req, res, next) => {
 const createJobController = async (req, res, next) => {
     try {
         const {idServ, idUserOff, idUserRec} = req.body;
-        const newJobId = await newJob(idServ, idUserOff, idUserRec);
+        const job = await newJob(idServ, idUserOff, idUserRec);
+
+        //console.log(newJob);
 
         res.send({
             status: '200',
-            message: `Lista de valoraciones del usuario con id: ${newJobId}`,
+            message: `Trabajo creado con éxito ${job.id_jobs}`,
+            data: job,
         });
 
     } catch(error) {
@@ -217,16 +223,21 @@ const createValController = async (req, res, next) => {
 //sube fichero al server
 const uploadController = async (req, res, next) => {
     try {
-        const {ijob, idus, name} = req.body;
+        const {ijob, idus, name} = req.body;        
         //crear un registro de fichero
         const info = await newFichUp(ijob, idus, name);
-
-        res.send({
-            status: '200',
-            message: `Fichero subido exitosamente con id: ${info[1]}`,
-            job: info[0],
+        let file = req.files.file;
+        file.mv(`./uploads/${idus}_${info[0][0].id_uOffer}_${info[0][0].id_serv}_${ijob}_${file.name}`,err => {
+            if(err) {return res.status(500).send({ message : err })
+            }else {
+            return res.send({
+                status: '200',
+                message: `Fichero subido exitosamente con id: ${info[1]}`,
+                job: info[0][0],
+            })}
         })
 
+        
     } catch(error) {
         next(error);
     }
@@ -249,6 +260,58 @@ const solvJobController = async (req, res, next) => {
     }
 };
 
+//Borra un servicio propio por id
+const delIdServiceController = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const response = await delServById(id);
+
+        res.send({
+            status: '200',
+            message: `Servicio con id: ${id}, borrado satisfactoriamente`,
+        })
+
+        return response;
+
+    } catch(error) {
+        next(error);
+    }
+};
+
+//Busca todos los comentarios de un servicio por su id
+const getAllCommentsController = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const response = await allComsOneServ(id);
+
+        res.send({
+            status: '200',
+            message: response,
+        })
+
+        return response;
+
+    } catch(error) {
+        next(error);
+    }
+};
+
+//comprueba si el usuario loggeado tiene un trabajo concreto
+const checkStayJobCotroller = async (req, res, next) => {
+    try {
+        const { id, idS } = req.body;
+        const response = await checkMeInJob(id, idS);
+        res.send({
+            status: '200',
+            message: response[0].yOn,
+        })
+
+        return response;
+
+    } catch(error) {
+        next(error);
+    }
+};
 
 module.exports = {
     getServicesController,
@@ -265,4 +328,7 @@ module.exports = {
     createJobController,
     createValController,
     solvJobController,
+    delIdServiceController,
+    getAllCommentsController,
+    checkStayJobCotroller,
 }

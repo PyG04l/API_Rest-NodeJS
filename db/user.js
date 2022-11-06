@@ -69,7 +69,7 @@ const getUserById = async (id) => {
         connection = await getConnection();
 
         const [user] = await connection.query(`
-            SELECT id_user, user_name, alias, email, biografia, foto, fec_nac FROM users_info WHERE id_user = ?
+            SELECT id_user, alias, email, biografia, foto_path, fec_nac FROM users_info WHERE id_user = ?
         `, [id]);
 
         return user;

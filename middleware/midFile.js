@@ -1,8 +1,9 @@
 const multer = require('multer');
 const { getDateForm } = require('../helpers');
 
-const storage = multer.diskStorage({   
-    destination: (req, file, cb) => {
+
+const storage = multer.diskStorage({
+    destination: (req, res, cb) => {
         cb(null, 'uploads');
     },
     filename: (req, file, cb) => {
@@ -11,7 +12,7 @@ const storage = multer.diskStorage({
     }
 });
 
-const upload = multer({ storage: storage }).single('image');
+const upload = multer({ storage: storage }).single('file');
 
 module.exports = {
     upload,
