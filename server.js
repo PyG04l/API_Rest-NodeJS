@@ -25,7 +25,6 @@ const {
 } = require('./controllers/services');
 
 const { authUser } = require('./middleware/midUser');
-const { upload } = require('./middleware/midFile');
 
 const app = express();
 
