@@ -16,6 +16,8 @@ const {
     delServById,
     allComsOneServ,
     checkMeInJob,
+    checkForSolvJob,
+    getServ,
 } = require('../db/service');
 
 //devuelve los ultimos 10 servicios creados
@@ -260,6 +262,29 @@ const solvJobController = async (req, res, next) => {
     }
 };
 
+//Marca trabajo como solucionado y fija la fecha del dia de la solucion
+const checkIfJobIsSolvedController = async (req, res, next) => {
+    try {
+        const { id } = req.body;
+        const solvedJob = await checkForSolvJob(id);
+
+        solvedJob ? (
+        res.send({
+            status: '200',
+            message: `Trabajo con id: ${id}, solucionado`,
+            job: job[0],
+        })) : (
+        res.send({
+            status: '200',
+            message: `Este servicio aún no se ha resuelto`,
+        }))
+        
+
+    } catch(error) {
+        next(error);
+    }
+};
+
 //Borra un servicio propio por id
 const delIdServiceController = async (req, res, next) => {
     try {
@@ -313,6 +338,23 @@ const checkStayJobCotroller = async (req, res, next) => {
     }
 };
 
+//devuelve los datos de un servicio
+const getServController = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const response = await getServ(id);
+        res.send({
+            status: '200',
+            message: response[0],
+        })
+
+        return response;
+
+    } catch(error) {
+        next(error);
+    }
+};
+
 module.exports = {
     getServicesController,
     newServiceController,
@@ -331,4 +373,6 @@ module.exports = {
     delIdServiceController,
     getAllCommentsController,
     checkStayJobCotroller,
+    checkIfJobIsSolvedController,
+    getServController,
 }

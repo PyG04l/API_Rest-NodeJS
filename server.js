@@ -21,7 +21,8 @@ const {
     getAllVallsController, createJobController,
     createValController, solvJobController,
     delIdServiceController, getAllCommentsController,
-    checkStayJobCotroller,
+    checkStayJobCotroller, checkIfJobIsSolvedController,
+    getServController,
 } = require('./controllers/services');
 
 const { authUser } = require('./middleware/midUser');
@@ -31,13 +32,13 @@ const app = express();
 app.use(express.json());
 app.use(morgan('dev'));
 app.use('/uploads', express.static('./uploads'));
-app.use(cors({origin: '*',}));
+app.use(cors());
 app.use(fileUpload());
 
 //Rutas users
 app.post('/user', newUserController); //crea usuario
 app.post('/login', loginController); //loguea usuario
-app.get('/user/:id', authUser, getUserController); //editar usuario
+app.get('/userParams', authUser, getUserController); //recupera datos de usuario
 app.put('/modifyUser', authUser, modifyUserController); //Modifica el perfil del usuario
 app.post('/chanPass', authUser, changePassController); //Cambia la contraseña del usuario
 
@@ -59,6 +60,8 @@ app.post('/newJob', authUser, createJobController); //crea un trabajo nuevo
 app.get('/imInThatJob', authUser, checkStayJobCotroller); //comprueba si el usuario loggeado tiene un trabajo concreto
 app.post('/newVal', authUser, createValController); //crea una valoracion de un trabajo
 app.put('/solved/:id', authUser, solvJobController); //Marca trabajo como resuelto
+app.get('/solved', authUser, checkIfJobIsSolvedController); //Comprueba si un trabajo esta realizado
+app.get('/serv/:id', authUser, getServController); //Devuelve los datos de un servicio
 
 
 //Cors
@@ -92,5 +95,5 @@ app.use((error, req, res, next) => {
 
 //lanzar server
 app.listen(process.env.BACK_PORT, () => {
-    console.log('Servidor en marcha!');
+    console.log('Servidor en marcha!', process.env.BACK_PORT );
 })

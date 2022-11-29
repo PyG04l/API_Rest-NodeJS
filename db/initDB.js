@@ -61,7 +61,7 @@ async function main() {
             id_uReciber INT NOT NULL,
             fech_sol DATETIME NOT NULL,
             fech_res DATETIME,
-            resuelto TINYINT,
+            resuelto TINYINT DEFAULT 0,
             PRIMARY KEY (id_jobs),
             FOREIGN KEY (id_serv)
             REFERENCES services (id_service),

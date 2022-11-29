@@ -29,7 +29,15 @@ const getFirstsServs = async () => {
         connection = await getConnection();
 
         const [result] = await connection.query(`
-            SELECT * FROM services ORDER BY id_service DESC
+        SELECT s.id_service, s.id_user, s.nombre_servicio, s.description, s.grupo, u.alias, u.email, u.foto_path, IFNULL(c.numComentarios, 0) as numComentarios
+FROM services as s
+LEFT JOIN users_info AS u ON u.id_user = s.id_user
+LEFT JOIN (
+	SELECT id_serv, count(*) as numComentarios
+    FROM comentarios 
+    group by id_serv
+) AS c ON s.id_service = c.id_serv
+ORDER BY id_service DESC ;
             `,);
 
         return result;
@@ -368,6 +376,42 @@ const checkMeInJob = async (idUs, idServ) => {
     }
 };
 
+//Devuelve todos los comentarios por id de servicio
+const checkForSolvJob = async (idJob) => {
+    let connection;
+
+    try {
+        connection = await getConnection();
+
+        const response = await connection.query(`
+        SELECT resuelto FROM trabajos WHERE id_jobs = ?;
+            `, [idJob]);
+
+        return response[0];
+
+    } finally {
+        if(connection) connection.release();
+    }
+};
+
+//Devuelve los datos de un servicio
+const getServ = async (id) => {
+    let connection;
+
+    try {
+        connection = await getConnection();
+
+        const response = await connection.query(`
+        SELECT * FROM services WHERE id_service = ?;
+            `, [id]);
+
+        return response[0];
+
+    } finally {
+        if(connection) connection.release();
+    }
+};
+
 module.exports = {
     createService,
     getFirstsServs,
@@ -387,4 +431,6 @@ module.exports = {
     delServById,
     allComsOneServ,
     checkMeInJob,
+    checkForSolvJob,
+    getServ,
 };

@@ -29,7 +29,7 @@ const newUserController = async (req, res, next) => {
 //recupera info del usuario por id
 const getUserController = async (req, res, next) => {
     try {
-        const { id } = req.params;
+        const { id } = req.body;
 
         const usInfo = await getUserById(id);
 
