@@ -1,8 +1,8 @@
 const Joi = require("joi");
 const path = require("path");
 const sharp = require("sharp");
-0;
-const { nanoid } = require("nanoid");
+
+//const { nanoid } = require("nanoid");
 const { unlink } = require("fs/promises");
 
 //generador de errores
@@ -58,6 +58,7 @@ const getDateForm = () => {
 
 const deleteImage = async (oldImage) => {
   //crear el path del directorio uploads
+  console.log("OLDIMAGENAME: ", oldImage);
   const uploadsPath = path.join(__dirname, "uploads");
   unlink(`${uploadsPath}/${oldImage}`);
 };
@@ -69,7 +70,7 @@ const uploadAndProcessImage = async (imageBuffer, imageName) => {
   //cargar la imagen en sharp
   const image = sharp(imageBuffer);
 
-  //comprobamos que la imagen non es muy grande (máximo de 1000 px de ancho)
+  //comprobamos que la imagen no es muy grande (máximo de 1000 px de ancho)
   const imageDimensions = await image.metadata();
 
   if (imageDimensions.width > 1000) {

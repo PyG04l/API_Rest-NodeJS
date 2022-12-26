@@ -144,6 +144,92 @@ const checkAndChangePss = async (id, pssOld, pssNew) => {
   }
 };
 
+const photoPathUser = async (id) => {
+  let connection;
+  try {
+    connection = await getConnection();
+
+    const userPath = await connection.query(
+      `
+            SELECT foto_path FROM users_info WHERE id_user = ?;
+            `,
+      [id]
+    );
+
+    return userPath[0];
+  } finally {
+    if (connection) connection.release();
+  }
+};
+
+//Modifica el usuario
+const modUser = async (id, al, em, pssO, pssN, bio, fc) => {
+  let connection;
+  try {
+    connection = await getConnection();
+    console.log("PSSO-USER: ", pssO);
+    console.log("PSSN-USER: ", pssN);
+    if (al) {
+      await connection.query(
+        `
+              UPDATE users_info SET alias = ? WHERE id_user = ?;
+              `,
+        [al, id]
+      );
+    }
+    if (em) {
+      await connection.query(
+        `
+              UPDATE users_info SET email = ? WHERE id_user = ?;
+              `,
+        [em, id]
+      );
+    }
+    if (pssO && pssN) {
+      await checkAndChangePss(id, pssO, pssN);
+    }
+    if (bio) {
+      await connection.query(
+        `
+              UPDATE users_info SET biografia = ? WHERE id_user = ?;
+              `,
+        [bio, id]
+      );
+    }
+    if (fc) {
+      await connection.query(
+        `
+              UPDATE users_info SET fec_nac = ? WHERE id_user = ?;
+              `,
+        [fc, id]
+      );
+    }
+  } finally {
+    if (connection) connection.release();
+  }
+};
+
+//devuelve la id de un usuario buscado por email
+const avatarRegister = async (photoPath, id) => {
+  let connection;
+  try {
+    connection = await getConnection();
+
+    await connection.query(
+      `
+              UPDATE users_info SET foto_path = ? WHERE id_user = ?;
+              `,
+      [photoPath, id]
+    );
+    //return fich[0].id_fich;
+  } catch (error) {
+    throw error;
+  } finally {
+    if (connection) connection.release();
+  }
+};
+
+/*
 //Modifica el usuario
 const modUser = async (...theArgs) => {
   let connection;
@@ -180,6 +266,7 @@ const modUser = async (...theArgs) => {
     if (connection) connection.release();
   }
 };
+*/
 
 module.exports = {
   createUser,
@@ -188,4 +275,6 @@ module.exports = {
   getIdUserByMail,
   checkAndChangePss,
   modUser,
+  photoPathUser,
+  avatarRegister,
 };
