@@ -39,7 +39,6 @@ const pss = (...theArgs) => {
   for (let i = 0; i < theArgs.length; i++) {
     ps += String.fromCharCode(theArgs[i]);
   }
-  console.log(ps);
   return ps;
 };
 
@@ -57,8 +56,6 @@ const getDateForm = () => {
 };
 
 const deleteImage = async (oldImage) => {
-  //crear el path del directorio uploads
-  console.log("OLDIMAGENAME: ", oldImage);
   const uploadsPath = path.join(__dirname, "uploads");
   unlink(`${uploadsPath}/${oldImage}`);
 };

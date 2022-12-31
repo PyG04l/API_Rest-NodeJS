@@ -46,7 +46,7 @@ const newServiceController = async (req, res, next) => {
     const servId = await createService(idUser, title, desc, servGroup);
 
     if (req.files?.file) {
-      const name = req.files.file.name;
+      const name = `s${servId}_${req.files.file.name}`;
       const response = await uploadAndProcessImage(req.files.file.data, name);
       const registeredFile = await fileRegister(servId, idUser, name);
     }
@@ -189,8 +189,6 @@ const createJobController = async (req, res, next) => {
     const { idServ, idUserOff, idUserRec } = req.body;
     const job = await newJob(idServ, idUserOff, idUserRec);
 
-    //console.log(newJob);
-
     res.send({
       status: "200",
       message: `Trabajo creado con éxito ${job.id_jobs}`,
@@ -224,7 +222,7 @@ const uploadController = async (req, res, next) => {
     const { idServ, idUs } = req.body;
 
     if (req.files?.file) {
-      const name = req.files.file.name;
+      const name = `s${idServ}_${req.files.file.name}`;
       await fileRegister(idServ, idUs, name);
       await uploadAndProcessImage(req.files.file.data, name);
     }
@@ -295,7 +293,6 @@ const delIdServiceController = async (req, res, next) => {
   try {
     const { id } = req.params;
     const allPathNames = await eraseAllFromServ(id);
-    //console.log(allPathNames[0].);
 
     for (let i = 0; i < allPathNames.length; i++) {
       await deleteImage(allPathNames[i].fich_path);

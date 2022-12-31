@@ -48,15 +48,16 @@ const getFirstsServs = async () => {
     connection = await getConnection();
 
     const [result] = await connection.query(`
-        SELECT s.id_service, s.id_user, s.nombre_servicio, s.description, s.grupo, u.alias, u.email, u.foto_path, IFNULL(c.numComentarios, 0) as numComentarios
-        FROM services as s
-        LEFT JOIN users_info AS u ON u.id_user = s.id_user
-        LEFT JOIN (
-            SELECT id_serv, count(*) as numComentarios
-            FROM comentarios 
-            group by id_serv
-        ) AS c ON s.id_service = c.id_serv
-        ORDER BY id_service DESC ;
+      SELECT s.id_service, s.id_user, s.nombre_servicio, s.description, s.grupo, u.alias, u.email, u.foto_path, IFNULL(c.numComentarios, 0) as numComentarios, t.resuelto
+      FROM services as s
+      LEFT JOIN users_info AS u ON u.id_user = s.id_user
+      LEFT JOIN trabajos AS t ON s.id_service = t.id_serv
+      LEFT JOIN (
+          SELECT id_serv, count(*) as numComentarios
+          FROM comentarios 
+          group by id_serv
+      ) AS c ON s.id_service = c.id_serv 
+      ORDER BY id_service DESC;
             `);
 
     return result;
@@ -521,12 +522,11 @@ const getServ = async (id) => {
     const comentarios = responseComentarios[0];
     let resolved = responseResolved[0];
     const fichs = responseFichs[0];
-    //const cursing = responseCursing[0]
-    //console.log('IDU::==::', idU);
+
     if (resolved.length == 0) {
       resolved = [{ resuelto: -1 }];
     }
-    //console.log(resolved[0].id_uReciber);
+
     return { infoService, resolved, fichs, comentarios };
   } finally {
     if (connection) connection.release();

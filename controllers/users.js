@@ -121,18 +121,11 @@ const modifyUserController = async (req, res, next) => {
       bio = null,
       fc = null,
     } = req.body;
-    console.log(
-      pssO ? `UNA-CONTROLLER: ${pssO}` : "No llega la contraseña vieja"
-    );
-    console.log(
-      pssN ? `DOS-CONTROLLER: ${pssN}` : "No llega la contraseña nueva"
-    );
     await modUser(id, al, em, pssO, pssN, bio, fc);
 
     if (req.files?.avatar) {
-      const name = req.files.avatar.name;
+      const name = `u${id}_${req.files.avatar.name}`;
       const pathUser = await photoPathUser(id);
-      //console.log("PATHUSER1: ", pathUser[0].foto_path);
       if (pathUser[0].foto_path) {
         await deleteImage(pathUser[0].foto_path);
         await avatarRegister(name, id);

@@ -94,8 +94,6 @@ app.use((req, res) => {
 
 //errores
 app.use((error, req, res, next) => {
-  console.log(error);
-
   res.status(error.httpStatus || 500).send({
     status: error.httpStatus,
     message: error.message,

@@ -167,8 +167,7 @@ const modUser = async (id, al, em, pssO, pssN, bio, fc) => {
   let connection;
   try {
     connection = await getConnection();
-    console.log("PSSO-USER: ", pssO);
-    console.log("PSSN-USER: ", pssN);
+
     if (al) {
       await connection.query(
         `
@@ -228,45 +227,6 @@ const avatarRegister = async (photoPath, id) => {
     if (connection) connection.release();
   }
 };
-
-/*
-//Modifica el usuario
-const modUser = async (...theArgs) => {
-  let connection;
-
-  try {
-    const parts = [
-      `alias = ?`,
-      `email = ?`,
-      `psswd = ?`,
-      `biografia = ?`,
-      `foto_path = ?`,
-      `fec_nac = ?`,
-    ];
-    let query = [];
-    let vars = [];
-
-    if (theArgs.length > 1) {
-      for (let i = 0; i < theArgs.length; i++) {
-        if (theArgs[i] != null && i != 0) {
-          query.push(parts[i - 1]);
-          vars.push(theArgs[i]);
-        }
-      }
-    }
-    vars.push(theArgs[0]);
-    let completedQuery = `UPDATE users_info SET ${query.join(
-      ", "
-    )} WHERE id_user = ?`;
-
-    connection = await getConnection();
-
-    await connection.query(completedQuery, vars);
-  } finally {
-    if (connection) connection.release();
-  }
-};
-*/
 
 module.exports = {
   createUser,
