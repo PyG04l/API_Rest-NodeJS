@@ -1,6 +1,7 @@
 const Joi = require("joi");
 const path = require("path");
 const sharp = require("sharp");
+const fs = require("fs/promises");
 
 //const { nanoid } = require("nanoid");
 const { unlink } = require("fs/promises");
@@ -60,26 +61,24 @@ const deleteImage = async (oldImage) => {
   unlink(`${uploadsPath}/${oldImage}`);
 };
 
-const uploadAndProcessImage = async (imageBuffer, imageName) => {
+const uploadAndProcessFile = async (imageBuffer, imageName) => {
   //crear el path del directorio uploads
   const uploadsPath = path.join(__dirname, "uploads");
 
   //cargar la imagen en sharp
-  const image = sharp(imageBuffer);
+  //const image = sharp(imageBuffer);
 
   //comprobamos que la imagen no es muy grande (máximo de 1000 px de ancho)
-  const imageDimensions = await image.metadata();
-
+  //const imageDimensions = await image.metadata();
+  /*
   if (imageDimensions.width > 1000) {
     image.resize(1000);
   }
-
-  //Generamos un nombre para la imagen
-  //const imageName = `${nanoid(16)}.jpg`;
-  //const imageName = name;
+*/
 
   //Guardamos la imagen con ese nombre
-  await image.toFile(path.join(uploadsPath, imageName));
+  //await image.toFile(path.join(uploadsPath, imageName));
+  fs.writeFile(path.join(uploadsPath, imageName), imageBuffer);
 
   return imageName;
 };
@@ -90,6 +89,6 @@ module.exports = {
   validarPass,
   pss,
   getDateForm,
-  uploadAndProcessImage,
+  uploadAndProcessFile,
   deleteImage,
 };

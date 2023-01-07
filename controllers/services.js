@@ -22,7 +22,7 @@ const {
   fileRegister,
 } = require("../db/service");
 
-const { uploadAndProcessImage, deleteImage } = require("../helpers");
+const { uploadAndProcessFile, deleteImage } = require("../helpers");
 
 //devuelve los ultimos 10 servicios creados
 const getServicesController = async (req, res, next) => {
@@ -224,7 +224,7 @@ const uploadController = async (req, res, next) => {
     if (req.files?.file) {
       const name = `s${idServ}_${req.files.file.name}`;
       await fileRegister(idServ, idUs, name);
-      await uploadAndProcessImage(req.files.file.data, name);
+      await uploadAndProcessFile(req.files.file.data, name);
     }
     //crear un registro de fichero
     //const info = await newFichUp(ijob, idus, name);
